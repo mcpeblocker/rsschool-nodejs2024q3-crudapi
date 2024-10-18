@@ -1,0 +1,19 @@
+{
+  "name": "crud-api",
+  "version": "1.0.0",
+  "main": "build/main.js",
+  "scripts": {
+    "start": "node .",
+    "start:dev": "nodemon src/main.ts",
+    "start:prod": "tsc && node ."
+  },
+  "keywords": [],
+  "author": "mcpeblocker",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "nodemon": "^3.1.7",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3"
+  }
+}
