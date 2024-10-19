@@ -1,3 +1,5 @@
+import http from 'http';
+
 export class ApplicationError extends Error {
     public statusCode: number;
     constructor(message: string, statusCode: number = 500) {
@@ -24,4 +26,12 @@ export class InvalidUserDataError extends ApplicationError {
     constructor() {
         super("The user data you provided does not match the intended form. Please review the properties of user and try again.", 400);
     }
+}
+
+export const serverError = new ApplicationError("An unexpected error occurred.", 500);
+
+export const getErrorHandler = (error: ApplicationError) => (res: http.ServerResponse) => {
+    res.writeHead(error.statusCode);
+    res.write(error.message);
+    res.end();
 }

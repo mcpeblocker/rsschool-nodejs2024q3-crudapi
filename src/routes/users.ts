@@ -1,5 +1,6 @@
 import database from "../core/database";
 import { Route } from "../types/Route";
+import { ApplicationError, getErrorHandler, serverError } from "../utils/errors";
 
 const matchesBasePath = /\api\/users(\/)?$/;
 const matchesPathWithId = /\/api\/users\/(.+)$/;
@@ -8,7 +9,7 @@ const subroutes: Route[] = [
     {
         method: "GET",
         path: matchesBasePath,
-        handler: (req, res) => {
+        handler: (_, res) => {
             const users = database.getUsers();
             res.writeHead(200, {
                 "Content-Type": "application/json"
@@ -40,12 +41,18 @@ const subroutes: Route[] = [
                 data += chunk;
             });
             req.on("end", () => {
-                const user = database.addUser(JSON.parse(data));
-                res.writeHead(201, {
-                    "Content-Type": "application/json"
-                });
-                res.write(JSON.stringify(user));
-                res.end();
+                try {
+                    const user = database.addUser(JSON.parse(data));
+                    res.writeHead(201, {
+                        "Content-Type": "application/json"
+                    });
+                    res.write(JSON.stringify(user));
+                    res.end();
+                } catch (error) {
+                    getErrorHandler(
+                        error instanceof ApplicationError ? error : serverError
+                    )(res);
+                }
             });
         }
     },
@@ -60,12 +67,18 @@ const subroutes: Route[] = [
                 data += chunk;
             });
             req.on("end", () => {
-                const user = database.editUser(id, JSON.parse(data));
-                res.writeHead(200, {
-                    "Content-Type": "application/json"
-                });
-                res.write(JSON.stringify(user));
-                res.end();
+                try {
+                    const user = database.editUser(id, JSON.parse(data));
+                    res.writeHead(200, {
+                        "Content-Type": "application/json"
+                    });
+                    res.write(JSON.stringify(user));
+                    res.end();
+                } catch (error) {
+                    getErrorHandler(
+                        error instanceof ApplicationError ? error : serverError
+                    )(res);
+                }
             });
         }
     },

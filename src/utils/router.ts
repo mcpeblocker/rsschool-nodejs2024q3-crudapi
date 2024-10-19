@@ -1,7 +1,7 @@
 import http from 'http';
 import { Route } from "../types/Route";
 import notFoundHandler from '../handlers/notFound';
-import { ApplicationError } from './errors';
+import { ApplicationError, getErrorHandler, serverError } from './errors';
 
 const router = (routes: Route[]) => (req: http.IncomingMessage, res: http.ServerResponse) => {
     const handler =
@@ -10,15 +10,9 @@ const router = (routes: Route[]) => (req: http.IncomingMessage, res: http.Server
     try {
         handler(req, res);
     } catch(error) {
-        if (error instanceof ApplicationError) {
-            res.statusCode = error.statusCode;
-            res.write(error.message);
-            res.end();
-        } else {
-            res.statusCode = 500;
-            res.write("An unexpected error occurred.");
-            res.end();
-        }
+        getErrorHandler(
+            error instanceof ApplicationError ? error : serverError
+        )(res);
     }
 }
 
