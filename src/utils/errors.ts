@@ -6,7 +6,6 @@ export class ApplicationError extends Error {
         super(message);
         this.name = "ApplicationError";
         this.statusCode = statusCode;
-        console.trace(this.stack);
     }
 }
 
